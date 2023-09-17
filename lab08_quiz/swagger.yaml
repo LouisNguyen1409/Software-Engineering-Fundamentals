@@ -1,0 +1,608 @@
+openapi: 3.0.3
+info:
+  title: Lab08 Quiz API
+  description: |
+    API written for lab08_quiz.
+    
+    This is only for your convenience. For any mistakes or inconsistency with the specification (README.md), please report to us on the course forum :).
+    
+    Please examine the 'example' return values carefully - for example, the GET quiz/:quizid route requires your object to be wrapped in a 'quiz' key.
+    
+    A 401 error should always have priority over a 400 error.
+    
+    Also, feel free to ignore the names of some of the schemas at the bottom of this file - this is only a label. To find out what each route takes in as input and returns, you instead should look at the "Example Value" within each route.
+  version: 1.0.0
+
+tags:
+  - name: Sample
+    description: These are sample routes that we've already implemented for you!
+  - name: Quizzes
+    description: Routes relating to creating or listing quizzes
+  - name: Quiz
+    description: Routes that allow for operations on a single quiz
+  - name: Question
+    description: Routes that allow for operations on a single question
+  - name: Other
+    description: Routes that don't fit in any of the categories above
+
+paths:
+  /:
+    get:
+      tags:
+        - Sample
+      summary: Displays a message
+      responses:
+        '200':
+          $ref: '#/components/responses/MessageResponse'
+
+  /echo/echo:
+    get:
+      tags:
+        - Sample
+      summary: Echo back a message
+      parameters:
+        - name: message
+          in: query
+          schema:
+            $ref: '#/components/schemas/Message'
+      responses:
+        '200':
+          $ref: '#/components/responses/MessageResponse'
+        '400':
+          description: |
+            If any of the following is true:
+            - Attempting to echo the message "echo"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorObject'
+
+  /clear:
+    delete:
+      tags:
+        - Other
+      summary: Clears the data store
+      description: |
+        Remove all quizzes and questions from the data store.
+        If there are any timers/schedules set in the future, they should also be removed!
+      responses:
+        '200':
+          $ref: '#/components/responses/EmptyObjectResponse'
+  
+  /quiz/create:
+    post:
+      tags:
+        - Quizzes
+      summary: Creates a quiz
+      description: |
+        Create a quiz and return its corresponding id.
+      parameters:
+        - $ref: '#/components/parameters/Lab08QuizSecretHeader'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QuizInputData'
+      responses:
+        '200':
+          description: Returns a corresponding quiz id upon creation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  quizId:
+                    $ref: '#/components/schemas/QuizId'
+        '401':
+          $ref: '#/components/responses/Error401Lab08QuizSecret'
+        '400':
+          description: |
+            If any of the following is true:
+              - quizTitle is an empty string, ""
+              - quizSynopsis is an empty string, ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorObject'
+      security:
+        - Lab08 Quiz Secret Authentication: [] 
+
+  /quizzes/list:
+    get:
+      tags:
+        - Quizzes
+      summary: List brief information about all quizzes!
+      description: |
+        My quiz, your quiz, everybody's quizzes! But only the title and id though :')
+      parameters:
+        - $ref: '#/components/parameters/Lab08QuizSecretHeader'
+      responses:
+        '200':
+          description: Returns a corresponding quiz id upon creation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  quizzes:
+                    $ref: '#/components/schemas/Quizzes'
+        '401':
+          $ref: '#/components/responses/Error401Lab08QuizSecret'
+      security:
+        - Lab08 Quiz Secret Authentication: [] 
+
+  /quiz/{quizid}:
+    get:
+      tags:
+        - Quiz
+      summary: View the full information about a quiz
+      description: |
+        Returns every bit of detail one would need to know about a quiz :)
+      parameters:
+        - $ref: '#/components/parameters/Lab08QuizSecretHeader'
+        - $ref: '#/components/parameters/QuizId'
+      responses:
+        '200':
+          description: Returns the full quiz details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  quiz:
+                    $ref: '#/components/schemas/QuizFull'
+        '401':
+          $ref: '#/components/responses/Error401Lab08QuizSecret'
+        '400':
+          description: |
+            If any of the following is true:
+              - quizid does not refer to an existing quiz
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorObject'
+      security:
+        - Lab08 Quiz Secret Authentication: [] 
+    put:
+      tags:
+        - Quiz
+      summary: Edits a quiz 
+      description: |
+        Edits the title and synopsis of a quiz
+      parameters:
+        - $ref: '#/components/parameters/Lab08QuizSecretHeader'
+        - $ref: '#/components/parameters/QuizId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QuizInputData'
+      responses:
+        '200':
+          $ref: '#/components/responses/EmptyObjectResponse'
+        '401':
+          $ref: '#/components/responses/Error401Lab08QuizSecret'
+        '400':
+          description: |
+            If any of the following is true:
+              - quizid does not refer to an existing quiz
+              - quizTitle is an empty string, ""
+              - quizSynopsis is an empty string, ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorObject'
+      security:
+        - Lab08 Quiz Secret Authentication: [] 
+
+    delete:
+      tags:
+        - Quiz
+      summary: Deletes a quiz 
+      description: |
+        Deletes a quiz oh noooooo :( it's okay, it's in a better place now.
+      parameters:
+        - $ref: '#/components/parameters/Lab08QuizSecretHeader'
+        - $ref: '#/components/parameters/QuizId'
+      responses:
+        '200':
+          $ref: '#/components/responses/EmptyObjectResponse'
+        '401':
+          $ref: '#/components/responses/Error401Lab08QuizSecret'
+        '400':
+          description: |
+            If any of the following is true:
+              - quizid does not refer to an existing quiz
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorObject'
+      security:
+        - Lab08 Quiz Secret Authentication: [] 
+
+  /quiz/{quizid}/question:
+    post:
+      tags:
+        - Quiz
+      summary: Adds a quiz question
+      description: |
+        Adds a question to a quiz. How good is that?
+      parameters:
+        - $ref: '#/components/parameters/Lab08QuizSecretHeader'
+        - $ref: '#/components/parameters/QuizId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QuestionInputData'
+      responses:
+        '200':
+          description: Returns a corresponding question id upon creation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  questionId:
+                    $ref: '#/components/schemas/QuestionId'
+        '401':
+          $ref: '#/components/responses/Error401Lab08QuizSecret'
+        '400':
+          description: |
+            If any of the following is true:
+              - quizid does not refer to an existing quiz
+              - questionString is an empty string ""
+              - questionType is not either "single" or "multiple"
+              - the questionType is "single" and there is not exactly 1 correct answer
+              - there are no correct answers
+              - any of the answerString is an empty string, ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorObject'
+      security:
+        - Lab08 Quiz Secret Authentication: [] 
+
+  /question/{questionid}:
+    put:
+      tags:
+        - Question
+      summary: Edits a question
+      description: |
+        A question corresponding to the given question id will be edited. Isn't this amazing?
+      parameters:
+        - $ref: '#/components/parameters/Lab08QuizSecretHeader'
+        - $ref: '#/components/parameters/QuestionId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QuestionInputData'
+      responses:
+        '200':
+            $ref: '#/components/responses/EmptyObjectResponse'
+        '401':
+          $ref: '#/components/responses/Error401Lab08QuizSecret'
+        '400':
+          description: |
+            If any of the following is true:
+              - questionid does not refer to an existing question
+              - questionString is an empty string ""
+              - questionType is not either "single" or "multiple"
+              - the questionType is "single" and there is not exactly 1 correct answer
+              - there are no correct answers
+              - any of the answerString is an empty string, ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorObject'
+      security:
+        - Lab08 Quiz Secret Authentication: [] 
+    delete:
+      tags:
+        - Question
+      summary: Remove a question
+      description: |
+        The question corresponding to the given question id will be deleted :( - it shall be missed. 
+      parameters:
+        - $ref: '#/components/parameters/Lab08QuizSecretHeader'
+        - $ref: '#/components/parameters/QuestionId'
+      responses:
+        '200':
+            $ref: '#/components/responses/EmptyObjectResponse'
+        '401':
+          $ref: '#/components/responses/Error401Lab08QuizSecret'
+        '400':
+          description: |
+            If any of the following is true:
+              - questionid does not refer to an existing question
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorObject'
+      security:
+        - Lab08 Quiz Secret Authentication: [] 
+
+  /quiz/{quizid}/schedule/remove:
+    delete:
+      tags:
+        - Quiz
+      summary: Schedules quiz removal
+      description: |
+        Schedules a quiz for removal `secondsFromNow` seconds in the future.
+      parameters:
+        - $ref: '#/components/parameters/Lab08QuizSecretHeader'
+        - $ref: '#/components/parameters/QuizId'
+        - name: secondsFromNow
+          in: query
+          required: true
+          schema:
+            $ref: '#/components/schemas/SecondsFromNow'
+      responses:
+        '200':
+          $ref: '#/components/responses/EmptyObjectResponse'
+        '401':
+          $ref: '#/components/responses/Error401Lab08QuizSecret'
+        '400':
+          description: |
+            If any of the following is true:
+              - quizid does not refer to an existing quiz
+              - secondsFromNow is not strictly positive
+              - there is an active scheduled removal for the quiz
+        
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorObject'
+      security:
+        - Lab08 Quiz Secret Authentication: [] 
+
+  /quiz/{quizid}/schedule/remove/abort:
+    post:
+      tags:
+        - Quiz
+      summary: Schedules quiz removal
+      description: |
+        Aborts (cancel) an active schedule to remove a quiz
+      parameters:
+        - $ref: '#/components/parameters/Lab08QuizSecretHeader'
+        - $ref: '#/components/parameters/QuizId'
+      responses:
+        '200':
+          $ref: '#/components/responses/EmptyObjectResponse'
+        '401':
+          $ref: '#/components/responses/Error401Lab08QuizSecret'
+        '400':
+          description: |
+            If any of the following is true:
+              - quizid does not refer to an existing quiz
+              - there is no active scheduled removal for the quiz
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorObject'
+      security:
+        - Lab08 Quiz Secret Authentication: [] 
+
+components:
+  schemas:
+    Error:
+      type: string
+      example: Replace this with a relevant error message!
+      description: A specific error message of your choice!
+
+    ErrorObject:
+      type: object
+      description: Object containing error key
+      properties:
+        error:
+          $ref: '#/components/schemas/Error'
+
+    Message:
+      type: string
+      example: Hello darkness my old friend!
+      description: Some message of type string :)
+
+    MessageObject:
+      type: object
+      description: Object containing message key
+      properties:
+        message:
+          $ref: '#/components/schemas/Message'
+    
+    Lab08QuizSecret:
+      type: string
+      example: bruno's fight club
+      description: Secret key for lab08_quiz. Pssts, the secret is "bruno's fight club", but don't talk about it or tell anyone!
+    
+    QuizId:
+      type: number
+      description: A unique, immutable and non-reusable id that corresponds to exactly one quiz
+      example: 2041
+    
+    QuizTitle:
+      type: string
+      description: Title of a quiz to give the viewer a general idea of what the quiz is about
+      example: Celebrities in 2023
+    
+    QuizSynopsis:
+      type: string
+      description: Description for a quiz explaining the purpose or topics of the quiz in more details
+      example: Rising stars Tamio, Ramio and Giulianio are making their debut in Haydio, North Yuchio as IT-Pop artists
+    
+    QuestionType:
+      type: string
+      description: Valid types are 'single' or 'multiple'
+      example: single
+    
+    IsCorrect:
+      type: boolean
+      description: true if the answer is correct for a particular question and false otherwise
+      example: true
+    
+    AnswerString:
+      type: string
+      description: String describing the content of the answer
+      example: Yesn't
+    
+    AnswerItem:
+      type: object
+      properties:
+        isCorrect:
+          $ref: '#/components/schemas/IsCorrect'
+        answerString:
+          $ref: '#/components/schemas/AnswerString'
+    
+    Answers:
+      type: array
+      description: Array of answer items
+      items:
+        $ref: '#/components/schemas/AnswerItem'
+    
+    EmptyObject:
+      type: object
+      description: lol why even bother reading this!
+      example: {}
+    
+    QuestionId:
+      type: number
+      description: A unique, immutable and non-reusable id that corresponds to exactly one question
+      example: 2511
+    
+    QuestionString:
+      type: number
+      description: String describing the content of the question
+      example: 'Who won the 2022 FIFA World Cup?'
+    
+    QuestionInputData:
+      type: object
+      description: Data a user would input to create a new quiz
+      properties:
+        questionString:
+          $ref: '#/components/schemas/QuestionString'
+        questionType:
+          $ref: '#/components/schemas/QuestionType'
+        answers:
+          $ref: '#/components/schemas/Answers'
+    
+    QuestionItem:
+      allOf:
+        - type: object
+          properties:
+            questionId:
+              $ref: '#/components/schemas/QuestionId'
+        - $ref: '#/components/schemas/QuestionInputData'
+
+    Questions:
+      type: array
+      description: Array of questions for a quiz
+      items:
+        $ref: '#/components/schemas/QuestionItem'
+
+    QuizInputData:
+      type: object
+      description: Data a user would input to create a new quiz
+      properties:
+        quizTitle:
+          $ref: '#/components/schemas/QuizTitle'
+        quizSynopsis:
+          $ref: '#/components/schemas/QuizSynopsis'
+
+    QuizFull:
+      description: Items in a quiz array
+      allOf:
+        - $ref: '#/components/schemas/QuizInputData'
+        - type: object
+          properties:
+            quizId:
+              $ref: '#/components/schemas/QuizId'
+            questions:
+              $ref: '#/components/schemas/Questions'
+
+    QuizItem:
+      type: object
+      description: Brief details about a quiz
+      properties:
+        quizId:
+          $ref: '#/components/schemas/QuizId'
+        quizTitle:
+          $ref: '#/components/schemas/QuizTitle'
+
+    Quizzes:
+      type: array
+      description: Array of quizzes containing brief details for each quiz
+      items:
+        $ref: '#/components/schemas/QuizItem'
+        
+    SecondsFromNow:
+      type: number
+      description: Time in seconds as an integer
+      example: 2
+    
+  parameters:
+    QuizId:
+      in: path
+      name: quizid
+      required: true
+      schema:
+        $ref: '#/components/schemas/QuizId'
+
+    QuestionId:
+      in: path
+      name: questionid
+      required: true
+      schema:
+        $ref: '#/components/schemas/QuestionId'
+    
+    Lab08QuizSecretHeader:
+      in: header
+      name: lab08quizsecret
+      description: |
+        When using "Try it out" on swagger, you can either
+
+        1. use the input box below, or
+        2. use the ApiKey Authorisation by clicking the lock icon, 🔒, or the "Authorize 🔒" button at the top right corner.
+
+        The second method will allow you to save the same secret for all routes.
+      required: false
+      schema:
+        $ref: '#/components/schemas/Lab08QuizSecret'
+
+  requestBodies:
+    EchoRequestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Message'
+
+
+  responses:
+    MessageResponse:
+      description: Some message of type string :)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/MessageObject'
+    
+    EmptyObjectResponse:
+      description: Returns an empty object upon success
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/EmptyObject'
+    
+    Error401Lab08QuizSecret:
+      description: |
+        If any of the following is true:
+          - lab08quizsecret is not exactly the string "bruno's fight club"
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorObject'
+
+  securitySchemes:
+    Lab08 Quiz Secret Authentication:
+      type: apiKey
+      name: lab08quizsecret
+      in: header

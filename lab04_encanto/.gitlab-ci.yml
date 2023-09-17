@@ -1,0 +1,15 @@
+image: comp1531/basic:latest
+
+stages:
+  - checks
+    
+before_script:
+  - echo 'installing dependencies (npm i/npm ci)'
+
+testing:
+  stage: checks
+  script:
+    - npm install
+    - npm run test
+  only:
+    - master

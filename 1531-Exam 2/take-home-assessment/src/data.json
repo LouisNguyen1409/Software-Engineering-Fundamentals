@@ -1,0 +1,71 @@
+{
+  "items": [
+  {
+    "todoItemId": 0,
+    "description": "Exam 1st week", 
+    "tagIds": [0, 1], 
+    "status": "INPROGRESS", 
+    "parentId": null, 
+    "childrenIds": [1],
+    "score": "HIGH", 
+    "currentTime" : 1652030409,
+    "deadline": null
+  },
+  {
+    "todoItemId": 1, 
+    "description": "Exam 2nd week", 
+    "tagIds": [2], 
+    "status": "TODO", 
+    "parentId": 0, 
+    "childrenIds": [2],
+    "score": "NA", 
+    "currentTime" : 1652030409,
+    "deadline": 1652030409
+  },
+  {
+    "todoItemId": 2,
+    "description": "Personal Project", 
+    "tagIds": [0], 
+    "status": "TODO", 
+    "parentId": 1, 
+    "childrenIds": [],
+    "score": "LOW",
+    "currentTime" : 1652030410,
+    "deadline": 1652030409
+  }
+  ],
+  "tags": [
+  {
+      "tagId" : 0, 
+      "name": "COMP1531",
+      "itemIds": [0, 2]
+  },
+  {
+    "tagId" : 1, "name": "COMP2521",
+    "itemIds": [0]
+  },
+  {
+    "tagId" : 2,
+    "name": "COMP2511",
+    "itemIds": [1]
+  }
+  ],
+  "notifications": [
+    {
+      "todoItemId": 1,
+      "todoItemDescription": "Example Description",
+      "statusBefore": "TODO",
+      "statusAfter": "INPROGRESS",
+      "statusChangeTimestamp": 1652030409
+    },
+    {
+      "todoItemId": 1,
+      "todoItemDescription": "Example Description",
+      "statusBefore": "INPROGRESS",
+      "statusAfter": "DONE",
+      "statusChangeTimestamp": 1652030409
+    }
+  ],
+  "tagId": 0,
+  "todoItemId": 0
+}

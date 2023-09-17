@@ -1,0 +1,21 @@
+image: comp1531/basic:latest
+
+stages:
+  - checks
+    
+before_script:
+  - npm install
+
+testing:
+  stage: checks
+  script:
+    - npm run test
+  only:
+  - master
+
+linting:
+  stage: checks
+  script:
+    - npm run lint
+  only:
+  - master

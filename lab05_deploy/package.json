@@ -1,0 +1,19 @@
+{
+  "name": "lab05_deploy",
+  "version": "1.0.0",
+  "description": "[TOC]",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/jest": "^27.5.1",
+    "jest": "^28.1.0",
+    "sync-request": "^6.1.0",
+    "ts-jest": "^28.0.3",
+    "typescript": "^4.7.2"
+  }
+}

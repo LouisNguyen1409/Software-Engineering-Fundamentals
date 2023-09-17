@@ -1,0 +1,21 @@
+{
+  "name": "lab04_encanto",
+  "version": "1.0.0",
+  "description": "Where everything is fantastical and magical",
+  "main": "src/madrigal.ts",
+  "scripts": {
+    "test": "jest",
+    "tsc": "tsc --noEmit",
+    "ts-node": "ts-node"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/jest": "^29.5.2",
+    "jest": "^29.0.3",
+    "ts-jest": "^29.1.0",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.1.3"
+  }
+}

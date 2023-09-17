@@ -1,0 +1,23 @@
+image: comp1531/basic:latest
+
+stages:
+  - checks
+
+before_script:
+  - echo 'Add more commands here. This runs before all of your jobs'
+  - echo 'installing dependencies (npm i/npm ci)'
+
+testing:
+  stage: checks
+  script:
+    - npm install
+    - npm test
+  only:
+    - master
+
+linting:
+  stage: checks
+  script:
+    - npm run lint
+  only:
+    - master

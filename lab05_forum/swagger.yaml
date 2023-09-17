@@ -1,0 +1,379 @@
+openapi: 3.0.3
+info:
+  title: Lab05 Forum API
+  description: |
+    API written for lab05_forum.
+    
+    This is only for your convenience. For any mistakes or inconsistency with the specification (README.md), please report to us on the course forum :).
+    
+    Please examine the 'example' return values carefully - for example, the GET post/:postid route requires your object to be wrapped in a 'post' key.
+    
+    Also, feel free to ignore the names of some of the schemas at the bottom of this file - this is only a label. To find out what each route takes in as input and returns, you instead should look at the "Example Value" within each route.
+  version: 1.0.0
+
+tags:
+  - name: Sample
+    description: These are sample routes that we've already implemented for you!
+  - name: Forum
+    description: Creating or listing posts in the forum
+  - name: Post
+    description: Interacting with a forum post
+  - name: Other
+    description: Routes that don't fit in any of the categories above
+
+paths:
+  /:
+    get:
+      tags:
+        - Sample
+      summary: Displays a message
+      responses:
+        '200':
+          $ref: '#/components/responses/MessageResponse'
+
+  /echo/echo:
+    get:
+      tags:
+        - Sample
+      summary: Echo back a message
+      parameters:
+        - name: message
+          in: query
+          schema:
+            $ref: '#/components/schemas/Message'
+
+      responses:
+        '200':
+          $ref: '#/components/responses/MessageResponse'
+        '400':
+          description: |
+            If any of the following is true:
+            - Attempting to echo the message "echo"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorObject'
+
+  /clear:
+    delete:
+      tags:
+        - Other
+      summary: Clears the data store
+      responses:
+        '200':
+          $ref: '#/components/responses/EmptyObjectResponse'
+
+  /post/create:
+    post:
+      tags:
+        - Forum
+      summary: Adds a new post to our forum 
+      requestBody:
+        $ref: '#/components/requestBodies/PostCreateBody'
+      responses:
+        '200':
+          description: A postId corresponding to the post is returned
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  postId:
+                    $ref: '#/components/schemas/PostId'
+        '400':
+          description: |
+            If any of the following is true:
+              - sender is an empty string, ""
+              - title is an empty string, ""
+              - content is an empty string, ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorObject'
+
+  /post/{postid}/comment:
+    post:
+      tags:
+        - Post
+      summary: Adds a new comment to a forum post
+      parameters:
+        - $ref: '#/components/parameters/PostId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommentInputData'
+      responses:
+        '200':
+          description: A commentId corresponding to the comment is returned
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  commentId:
+                    $ref: '#/components/schemas/CommentId'
+        '400':
+          description: |
+            If any of the following is true:
+              - postid does not refer to a existing post
+              - sender is an empty string, ""
+              - comment is an empty string, ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorObject'
+
+
+  /post/{postid}:
+    get:
+      tags:
+        - Post
+      summary: Get full post information
+      description: | 
+        Fetch all details about a single forum post.
+
+        Comments in the post are sorted such that the most recent comment will
+        appear at index 0. For example, if three comments are made in the order
+        c1, c2 and c3, the returned list
+        will contain [c3, c2, c1].
+      parameters:
+        - $ref: '#/components/parameters/PostId'
+      responses:
+        '200':
+          description: Yay :)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  post:
+                    $ref: '#/components/schemas/PostFull'
+        '400':
+          description: |
+            If any of the following is true:
+              - postid does not refer to a existing post
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorObject'
+    put:
+      tags:
+        - Post
+      summary: Edits a post based on the given information
+      parameters:
+        - $ref: '#/components/parameters/PostId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostInputData'
+      responses:
+        '200':
+          $ref: '#/components/responses/EmptyObjectResponse'
+        '400':
+          description: |
+            If any of the following is true:
+              - postid does not refer to a existing post
+              - sender is an empty string, ""
+              - comment is an empty string, ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorObject'
+
+  /posts/list:
+    get:
+      tags:
+        - Forum
+      summary: Get all posts
+      description: |
+          Fetch brief details about all forum posts.
+          
+          Posts are sorted such that the most recent post will
+          appear at index 0. For example, if three posts are made in the order
+          p1, p2 and p3, the returned list
+          will contain [p3, p2, p1].
+      responses:
+        '200':
+          description: Yay :)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  posts:
+                    $ref: '#/components/schemas/PostsList'
+
+
+components:
+  schemas:
+    Error:
+      type: string
+      example: Replace this with a relevant error message!
+      description: A specific error message of your choice!
+
+    ErrorObject:
+      type: object
+      description: Object containing error key
+      properties:
+        error:
+          $ref: '#/components/schemas/Error'
+
+    Message:
+      type: string
+      example: Hello darkness my old friend!
+      description: Some message of type string :)
+
+    MessageObject:
+      type: object
+      description: Object containing message key
+      properties:
+        message:
+          $ref: '#/components/schemas/Message'
+    
+    Sender:
+      type: string
+      description: Name of the sender of a post or comment
+      example: Tam Nguyen
+
+    Title:
+      type: string
+      description: Title describing what the post is about
+      example: COMP1531 is hiring!
+    
+    Content:
+      type: string
+      description: More information about what a post contains
+      example: If you're interested in tutoring next term, please apply on Talloc!
+
+    Comment:
+      type: string
+      description: Replies to a forum post
+      example: What are the benefits of being a tutor?
+    
+    PostId:
+      type: number
+      description: A unique, immutable and non-reusable id that corresponds to exactly one post
+      example: 527
+
+    CommentId:
+      type: number
+      description: A unique, immutable and non-reusable id that corresponds to exactly one comment
+      example: 495
+    
+    TimeSent:
+      description: UNIX timestamp (in seconds)
+      type: number
+      example: 1684075929
+    
+    PostInputData:
+      type: object
+      description: Data that the user would input to create or edit a post
+      properties:
+        sender:
+          $ref: '#/components/schemas/Sender'
+        title:
+          $ref: '#/components/schemas/Title'
+        content:
+          $ref: '#/components/schemas/Content'
+
+    CommentInputData:
+      type: object
+      description: Data that the user would input to create a comment
+      properties:
+        sender:
+          $ref: '#/components/schemas/Sender'
+        comment:
+          $ref: '#/components/schemas/Comment'
+    
+    CommentItem:
+      type: object
+      description: Relevant information about a comment
+      properties:
+        commentId:
+          $ref: '#/components/schemas/CommentId'
+        sender:
+          $ref: '#/components/schemas/Sender'
+        comment:
+          $ref: '#/components/schemas/Comment'
+        timeSent:
+          $ref: '#/components/schemas/TimeSent'
+
+    PostFull:
+      description: Full details about a forum post, including comments
+      allOf:
+        - $ref: '#/components/schemas/PostInputData'
+        - type: object
+          properties:
+            postId:
+              $ref: '#/components/schemas/PostId'
+            timeSent:
+              $ref: '#/components/schemas/TimeSent'
+            comments:
+              type: array
+              items: 
+                $ref: '#/components/schemas/CommentItem'
+    
+    PostItem:
+      description: Brief details about a forum post, excluding content and comments
+      type: object
+      properties:
+        postId:
+          $ref: '#/components/schemas/PostId'
+        sender:
+          $ref: '#/components/schemas/Sender'
+        title:
+          $ref: '#/components/schemas/Title'
+        timeSent:
+          $ref: '#/components/schemas/TimeSent'
+
+    PostsList:
+      type: array
+      description: Array of posts with brief information
+      items:
+        $ref: '#/components/schemas/PostItem'
+
+    
+    EmptyObject:
+      type: object
+      description: lol why even bother reading this!
+    
+  parameters:
+    PostId:
+      in: path
+      name: postid
+      required: true
+      schema:
+        $ref: '#/components/schemas/PostId'
+
+  requestBodies:
+    EchoRequestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Message'
+
+    PostCreateBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PostInputData'
+
+  responses:
+    MessageResponse:
+      description: Some message of type string :)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/MessageObject'
+    
+    EmptyObjectResponse:
+      description: Returns an empty object upon success
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/EmptyObject'
+

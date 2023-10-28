@@ -1,0 +1,48 @@
+{
+  "users": [
+    {
+      "info": {
+        "authUserId": 0,
+        "name": "Yepeng Lin",
+        "email": "Yepeng@gmail.com",
+        "password": "59b1fcf78d74624562e221f7f4f2e32ca1bf18f4d31d9f3d3660cca0f0f87194",
+        "passwordList": [
+          "59b1fcf78d74624562e221f7f4f2e32ca1bf18f4d31d9f3d3660cca0f0f87194"
+        ],
+        "numSuccessfulLogins": 1,
+        "numFailedPasswordsSinceLastLogin": 0
+      },
+      "quizzes": [
+        {
+          "info": {
+            "quizId": 1,
+            "name": "LiteratureTest",
+            "timeCreated": 1691155378,
+            "timeLastEdited": 1691155378,
+            "description": "",
+            "numQuestions": 0,
+            "questions": [],
+            "duration": 0,
+            "thumbnailUrl": "http://localhost:49153/images/quiz_1.png"
+          }
+        }
+      ],
+      "trash": []
+    }
+  ],
+  "tokens": [],
+  "quizLength": 1,
+  "questionLength": 0,
+  "answerLength": 0,
+  "sessionIds": {
+    "active": [],
+    "inactive": []
+  },
+  "sessions": [],
+  "sessionStatus": {
+    "active": [],
+    "inactive": []
+  },
+  "sessionLength": 0,
+  "playerLength": 0
+}
